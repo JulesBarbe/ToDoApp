@@ -27,13 +27,31 @@ todoRouter.post("/todos", async (req: Request, res: Response) => {
 });
 
 //PUT /todos/:id -> update a todo
-todoRouter.put("/todos/:id", (req: Request, res: Response) => { 
-    res.send("Accessed PUT /todos");
+todoRouter.put("/todos/:id", async (req: Request, res: Response) => { 
+    try {
+    const updatedTodo = await Todo.findByIdAndUpdate(req.params.id, 
+        { $set: req.body },
+        { new: true },
+    );
+
+    res.json(updatedTodo);
+    } catch(error){
+        res.status(500).json({
+            message: "Something went wrong... please try again."
+        })
+    }
 });
 
 //DELETE /todos/:id -> delete a todo
-todoRouter.delete("/todos/:id", (req: Request, res: Response) => { 
-    res.send("Accessed DELETE /todos");
+todoRouter.delete("/todos/:id", async (req: Request, res: Response) => { 
+    try {
+       const deletedTodo = await Todo.findByIdAndRemove(req.params.id);
+       res.json(deletedTodo);
+    } catch(error) {
+        res.status(500).json({
+            message: "Something went wrong... please try again."
+        });
+    }
 });
 
 //export the router to use in server.ts
